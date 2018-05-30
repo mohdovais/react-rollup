@@ -1,0 +1,25 @@
+.block,
+.block-strong {
+    margin: 15px 0;
+    padding: 15px;
+    color: rgb(109, 109, 114);
+}
+
+.block-strong {
+    background-color: white
+}
+
+.block-title {
+    text-transform: uppercase;
+    color: #6d6d72;
+    margin: 35px 15px 10px;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.block-title+.block {
+    margin-top: 0;
+    padding-top: 0;
+}

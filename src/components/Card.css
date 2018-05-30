@@ -1,0 +1,28 @@
+.card {
+    border: 1px solid var(--border-color);
+    background-color: white;
+    margin: 10px;
+    border-radius: 3px;
+}
+
+.card>header {
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 15px;
+    color: black;
+}
+
+.card>header h1,
+.card>header h2,
+.card>header h3 {
+    margin: 0;
+}
+
+.card-content {
+    padding: 15px;
+}
+
+.card>footer {
+    border-top: 1px solid var(--border-color);
+    padding: 10px 15px;
+    color: grey;
+}

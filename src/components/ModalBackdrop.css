@@ -1,0 +1,27 @@
+.modal-backdrop {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, .4);
+    visibility: hidden;
+    opacity: 0;
+    transform: translate3d(0,0,0);
+}
+
+.modal-backdrop.backdrop-in {
+    visibility: visible;
+    opacity: 1;
+    animation: backdrop 0.4s ease-in-out;
+}
+
+@keyframes backdrop{
+    0% {
+        opacity: 0;
+    }
+
+    100%{
+        opacity: 1;
+    }
+}
