@@ -1,7 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './NavBar.css';
 
+NavBar.propTypes = {
+    title: PropTypes.string
+};
+
 export default class NavBar extends React.PureComponent {
+
     render() {
         return (
             <nav className="navbar">

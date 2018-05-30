@@ -12,6 +12,8 @@ const PRODUCTION = 'production';
 const NODE_ENV = process.env.NODE_ENV === PRODUCTION ? PRODUCTION : 'development';
 const prod = NODE_ENV === PRODUCTION;
 
+console.log(process.env.BABEL_ENV)
+
 export default {
     input: 'src/main.jsx',
     output: {

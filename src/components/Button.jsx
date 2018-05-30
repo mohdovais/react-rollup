@@ -1,7 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Button.css';
-
-const BUTTON_STYLES = ['link', 'outline', 'fill'];
 
 function filterAttribues(props) {
     return Object.keys(props)
@@ -12,7 +11,9 @@ function filterAttribues(props) {
         }, {});
 }
 
-export default class Buttons extends React.PureComponent {
+const BUTTON_STYLES = ['link', 'outline', 'fill'];
+
+export default class Button extends React.PureComponent {
     render() {
         const props = this.props;
         const className = BUTTON_STYLES.indexOf(props.buttonStyle) === -1 ? null : 'button-' + props.buttonStyle;
@@ -29,3 +30,9 @@ export default class Buttons extends React.PureComponent {
         );
     }
 }
+
+Button.PropTypes = {
+    buttonStyle: PropTypes.oneOf(BUTTON_STYLES),
+    onClick: PropTypes.func,
+    children: PropTypes.array
+};

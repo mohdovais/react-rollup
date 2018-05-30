@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Portal from './Portal';
 import ModalBacdrop from './ModalBackdrop';
 import './Modal.css';
@@ -7,6 +8,11 @@ const classNames = {
     center: 'modal-center', 
     bottom: 'modal-end',
     cover: 'modal-cover'
+};
+
+Modal.propTypes = {
+    align: PropTypes.string,
+    children: PropTypes.children
 };
 
 export default class Modal extends React.Component {

@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RenderIf should render children if condition is true 1`] = `"Hello"`;
+
+exports[`RenderIf should render children if condition is truthy 1`] = `"Hello"`;
+
+exports[`RenderIf should return null if condition is false 1`] = `null`;
+
+exports[`RenderIf should return null if condition is falsy 1`] = `null`;

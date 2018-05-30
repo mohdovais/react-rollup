@@ -1,11 +1,17 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
-import './Modal.css';
+import PropTypes from 'prop-types';
 
-// These two containers are siblings in the DOM
 const root = document.getElementById('root');
 
+Portal.propTypes = {
+    className: PropTypes.string,
+    root: PropTypes.object,
+    children: PropTypes.array
+};
+
 export default class Portal extends React.Component {
+
     constructor(props) {
         super(props);
         const el = document.createElement('div');
