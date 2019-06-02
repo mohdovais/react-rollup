@@ -1,49 +1,63 @@
 /*global process*/
-import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
-import uglify from 'rollup-plugin-uglify';
+import { terser } from 'rollup-plugin-terser';
 import postcss from 'rollup-plugin-postcss';
 import autoprefixer from 'autoprefixer';
+import babel from 'rollup-plugin-babel';
 import html from './rollup/rollup-plugin-html';
+import React from 'react';
+import { renderToString } from 'react-dom/server';
 
-const PRODUCTION = 'production';
-const NODE_ENV = process.env.NODE_ENV === PRODUCTION ? PRODUCTION : 'development';
-const prod = NODE_ENV === PRODUCTION;
+import rollupConfigSSR from './rollup/rollup.config.ssr';
+import requireFromRollupBundle from './rollup/require-from-bundle';
+
+const production = !process.env.ROLLUP_WATCH;
+const extensions = ['.js', '.jsx', '.ts', '.tsx'];
+
+const rand = Math.round(Math.random() * 1e10).toString(16);
 
 export default {
-    input: 'src/main.jsx',
+    input: 'src/main.tsx',
     output: {
-        file: `dist/${NODE_ENV}/bundle.js`,
+        file: `dist/bundle-${rand}.js`,
         format: 'iife',
-        sourcemap: true
+        sourcemap: true,
     },
     plugins: [
         postcss({
             plugins: [autoprefixer],
-            minimize: prod && {
-                reduceIdents: false
+            minimize: production && {
+                reduceIdents: false,
             },
-            extract: true
+            extract: true,
         }),
         resolve({
-            browser: true,
-            extensions: [ '.mjs', '.js', '.jsx', '.json' ]
+            extensions,
         }),
         replace({
-            'process.env.NODE_ENV': JSON.stringify(NODE_ENV)
+            'process.env.NODE_ENV': JSON.stringify(
+                production ? 'production' : 'development'
+            ),
+            __REACT_DEVTOOLS_GLOBAL_HOOK__: undefined,
         }),
         commonjs(),
         babel({
-            exclude: 'node_modules/**'
+            extensions,
+            include: ['src/**/*'],
+            presets: [['@babel/env', { targets: '>1%, not ie 11' }]],
         }),
-        prod && uglify(),
+        production && terser(),
         html({
             template: 'src/index.html',
-            favicon: 'src/assets/icons/favicon.ico',
-            title: 'Hello world',
-            minify: prod
-        })
-    ]
+            content: requireFromRollupBundle(rollupConfigSSR).then(
+                App =>
+                    `<div id="root">${renderToString(
+                        React.createElement(App, { name: 'Ovais' })
+                    )}</div>`
+            ),
+            minimize: production,
+        }),
+    ],
 };

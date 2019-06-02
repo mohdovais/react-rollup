@@ -1,109 +1,67 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require('fs');
 const path = require('path');
-const cheerio = require('cheerio');
-const minify = require('html-minifier').minify;
+const { createFilter } = require('rollup-pluginutils');
+//const cheerio = require('cheerio');
+//const minify = require('html-minifier').minify;
 
-const HTML = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-
-</body>
-</html>`;
-
-const DEFAULT_MINIFY_CONFIG = {
-    collapseInlineTagWhitespace: true,
-    collapseWhitespace: true,
-    html5: true,
-    minifyCSS: true,
-    minifyJS: true,
-    removeAttributeQuotes: true,
-    removeComments: true,
-    removeEmptyAttributes: true,
-    removeScriptTypeAttributes: true,
-    removeStyleLinkTypeAttributes: true,
-    removeTagWhitespace: true,
-};
-
-const DEFAULT_CONFIG = {
-    title: '',
-    filename: 'index.html',
-    template: '',
-    inject: 'body', // 'head'
-    favicon: '',
-    minify: false,
-    script: {}
-};
-
-const applyTemplate = function (content, config) {
-    const $ = cheerio.load(content);
-    let html;
-
-    if (config.title !== '') {
-        $('html>head>title').text(config.title);
+function ensureDirectoryExistence(filePath) {
+    var dirname = path.dirname(filePath);
+    if (fs.existsSync(dirname)) {
+        return true;
     }
+    ensureDirectoryExistence(dirname);
+    fs.mkdirSync(dirname);
+}
 
-    const hasFavicon = $('link[rel="shortcut icon"]', $.root()).attr('href') === 'favicon.ico';
-
-    if (config.favicon !== '' && !hasFavicon) {
-        $('<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">').appendTo('html>head');
-    }
-
-    $(`<script src="${config.jsFile}"></script>`).appendTo('body');
-
-    html = $.html();
-
-    if (config.minify) {
-        html = minify(html, config.minify);
-    }
-
-    return html;
-};
-
-const getHtml = function (template) {
-    if (template === '') {
-        return HTML;
-    } else {
-        return fs.readFileSync(path.resolve(template), 'utf-8');
-    }
-};
-
-const generate = function (config, jsFile) {
-    const dirJS = path.dirname(jsFile);
-    const htmlFile = dirJS + '/' + config.filename;
-    const dirHtml = path.dirname(htmlFile);
-    const html = getHtml(config.template);
-
-    config.jsFile = path.relative(dirHtml, jsFile);
-
-    const content = applyTemplate(html, config);
-
-    fs.writeFileSync(htmlFile, content, 'utf-8');
-
-    if (config.favicon !== '') {
-        fs.createReadStream(path.resolve(config.favicon))
-            .pipe(fs.createWriteStream(path.resolve(dirHtml, 'favicon.ico')));
-    }
-};
-
-export default function (userConfig) {
-    const config = Object.assign(DEFAULT_CONFIG, userConfig);
-
-    if (config.minify) {
-        config.minify = Object.assign({}, DEFAULT_MINIFY_CONFIG, userConfig.minify);
-    }
-
-    config.inject = config.inject === 'head' ? 'head' : 'body';
+export default function html(userConfig) {
+    const config = Object.assign({}, userConfig);
+    const filter = createFilter(userConfig.include, userConfig.exclude);
 
     return {
         name: 'html',
-        onwrite: function(options){
-            generate(config, options.file);
-        }
+        generateBundle: async function(opts, bundle) {
+            const dir = opts.dir || path.dirname(opts.file);
+            const fileName = path.parse(config.template).base;
+            const content =
+                typeof config.content === 'string'
+                    ? config.content
+                    : await config.content;
+
+            const js = Object.keys(bundle)
+                .filter(fileName => bundle[fileName].isEntry)
+                .map(fileName => `<script src="${fileName}"></script>`)
+                .join('');
+
+            const css = Object.keys(bundle)
+                .filter(
+                    fileName =>
+                        bundle[fileName].isAsset &&
+                        fileName.lastIndexOf('.css') > -1
+                )
+                .map(
+                    fileName => `
+    <script>(function (d,l) {l = d.createElement('link');l.setAttribute('rel', 'stylesheet');l.setAttribute('href', '${fileName}');d.head.appendChild(l);}(document))</script>`
+                )
+                .join('');
+
+            const htmlString = fs.readFileSync(config.template, 'utf8');
+            const indexOfBody = htmlString.lastIndexOf('</body>');
+            const newHTML =
+                htmlString.substring(0, indexOfBody) +
+                '\n    ' +
+                content +
+                '\n    ' +
+                css +
+                '\n    ' +
+                js +
+                htmlString.substring(indexOfBody);
+
+            const filePath = path.join(dir, fileName);
+
+            ensureDirectoryExistence(filePath);
+
+            fs.writeFileSync(filePath, newHTML, 'utf8');
+        },
     };
 }
