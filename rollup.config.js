@@ -16,14 +16,20 @@ import requireFromRollupBundle from './rollup/require-from-bundle';
 const production = !process.env.ROLLUP_WATCH;
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
-const rand = Math.round(Math.random() * 1e10).toString(16);
+//const rand = Math.round(Math.random() * 1e10).toString(16);
 
 export default {
     input: 'src/main.tsx',
     output: {
-        file: `dist/bundle-${rand}.js`,
-        format: 'iife',
+        dir: 'dist',
+        format: 'esm', //'umd',
         sourcemap: true,
+        chunkFileNames: '[name].js',
+    },
+    manualChunks: function(id) {
+        if (id.includes('node_modules')) {
+            return 'vendor';
+        }
     },
     plugins: [
         postcss({
@@ -40,9 +46,34 @@ export default {
             'process.env.NODE_ENV': JSON.stringify(
                 production ? 'production' : 'development'
             ),
-            __REACT_DEVTOOLS_GLOBAL_HOOK__: undefined,
+            //__REACT_DEVTOOLS_GLOBAL_HOOK__: undefined,
         }),
-        commonjs(),
+        commonjs({
+            namedExports: {
+                'node_modules/react/index.js': [
+                    'Children',
+                    'Component',
+                    'PropTypes',
+                    'Suspense',
+                    'createElement',
+                    'useContext',
+                    'useMemo',
+                    'useEffect',
+                    'useLayoutEffect',
+                    'useRef',
+                    'useReducer',
+                    'memo',
+                ],
+                'node_modules/react-dom/index.js': [
+                    'render',
+                    'unstable_batchedUpdates',
+                ],
+                'node_modules/react-is/index.js': [
+                    'isValidElementType',
+                    'isContextConsumer',
+                ],
+            },
+        }),
         babel({
             extensions,
             include: ['src/**/*'],

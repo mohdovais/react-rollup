@@ -27,10 +27,11 @@ export default function html(userConfig) {
                 typeof config.content === 'string'
                     ? config.content
                     : await config.content;
+            const jsType = opts.esModule ? ' type="module"' : '';
 
             const js = Object.keys(bundle)
                 .filter(fileName => bundle[fileName].isEntry)
-                .map(fileName => `<script src="${fileName}"></script>`)
+                .map(fileName => `<script src="${fileName}"${jsType}></script>`)
                 .join('');
 
             const css = Object.keys(bundle)
