@@ -10,11 +10,20 @@ import html from './rollup/rollup-plugin-html';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 
-import rollupConfigSSR from './rollup/rollup.config.ssr';
-import requireFromRollupBundle from './rollup/require-from-bundle';
+//import rollupConfigSSR from './rollup/rollup.config.ssr';
+//import requireFromRollupBundle from './rollup/require-from-bundle';
 
 const production = !process.env.ROLLUP_WATCH;
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
+
+/*
+const ssr = requireFromRollupBundle(rollupConfigSSR).then(
+    App =>
+        `<div id="root">${renderToString(
+            React.createElement(App, { name: 'Ovais' })
+        )}</div>`
+);
+*/
 
 //const rand = Math.round(Math.random() * 1e10).toString(16);
 
@@ -82,12 +91,7 @@ export default {
         production && terser(),
         html({
             template: 'src/index.html',
-            content: requireFromRollupBundle(rollupConfigSSR).then(
-                App =>
-                    `<div id="root">${renderToString(
-                        React.createElement(App, { name: 'Ovais' })
-                    )}</div>`
-            ),
+            content: '<div id="root"></div>',
             minimize: production,
         }),
     ],

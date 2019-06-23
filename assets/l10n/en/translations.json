@@ -1,3 +1,6 @@
 {
-    "wow": "Wow"
+    "hi": "Hi",
+    "line2": "You have to pay following: ",
+    "line3": "Bill amount: ",
+    "line4": "Last payement date: "
 }

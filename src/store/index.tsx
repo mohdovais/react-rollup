@@ -7,7 +7,7 @@ interface State {
     x: number;
 }
 
-function reducer(state: State = intialState, action) {
+function reducer(state: State = intialState): State {
     return state;
 }
 
