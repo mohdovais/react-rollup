@@ -11,13 +11,14 @@ export interface Translate {
 
 export interface LocalizationProps {
     lang: string;
+    translations(lang: string, keyword: string): Promise<void | Translations>;
     children: JSX.Element | JSX.Element[];
 }
 
 export interface TranslateProps {
     lang?: string;
-    code: string;
-    children?: string;
+    keyword: string;
+    children?: string | string[];
 }
 
 export interface FormatNumberProps {
@@ -41,36 +42,34 @@ export interface CacheMap {
 }
 
 const map: CacheMap = {};
+let translationsSrc: (
+    lang: string,
+    keyword: string
+) => Promise<void | Translations>;
 
-function getTranslations(lang: string): Promise<void | Translations> {
+function getTranslations(
+    lang: string,
+    keyword: string
+): Promise<void | Translations> {
     const cached = map[lang];
+    const src: Promise<void | Translations> = translationsSrc(lang, keyword);
+
     if (cached === undefined) {
-        return (map[lang] = fetch(
-            `l10n/${lang.split('-')[0]}/translations.json`
-        ).then(
-            (response: Response): Promise<void | Translations> => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error(response.statusText);
-                }
-            },
-            (error: any): void => {
-                throw new Error(error);
-            }
-        ));
+        return (map[lang] = src);
     } else {
         return cached;
     }
 }
 
 export function translate(
-    code: string,
+    keyword: string,
     lang: string
 ): Promise<string | undefined> {
-    return getTranslations(lang).then(
+    return getTranslations(lang, keyword).then(
         (translations: void | Translations): string | undefined => {
-            return translations === undefined ? undefined : translations[code];
+            return translations === undefined
+                ? undefined
+                : translations[keyword];
         },
         (error: Error): undefined => {
             return;
@@ -78,9 +77,10 @@ export function translate(
     );
 }
 
-export const TranslateContext = React.createContext('en-GB');
+export const TranslateContext = React.createContext(navigator.language);
 
 export default function Localization(props: LocalizationProps): JSX.Element {
+    translationsSrc = props.translations;
     return (
         <TranslateContext.Provider value={props.lang}>
             {props.children}
@@ -88,53 +88,63 @@ export default function Localization(props: LocalizationProps): JSX.Element {
     );
 }
 
-export function Translate(props: TranslateProps): JSX.Element {
+export const Translate = React.memo(function Translate(
+    props: TranslateProps
+): JSX.Element {
     const language = React.useContext(TranslateContext);
-    const { code, children } = props;
+    const { keyword, children } = props;
     const lang = props.lang || language;
     const [translation, setTranslation] = React.useState(
-        children || code || ''
+        children || keyword || ''
     );
 
     React.useEffect((): void => {
-        translate(code, lang).then((translation: string | undefined): void => {
-            translation !== undefined && setTranslation(translation);
-        });
-    }, [code, lang]);
+        translate(keyword, lang).then(
+            (translation: string | undefined): void => {
+                translation !== undefined && setTranslation(translation);
+            }
+        );
+    }, [keyword, lang]);
 
     return (
         <>
-            {code.length === 0
+            {keyword.length === 0
                 ? children === undefined
                     ? ''
                     : children
                 : translation}
         </>
     );
-}
+});
 
-export function Format(props: FormatProps): string {
+export const Format = React.memo(function Format(
+    props: FormatProps
+): JSX.Element {
     const language = React.useContext(TranslateContext);
     const children = props.children;
     const lang = props.lang || language;
 
     if (typeof children === 'number') {
-        return children.toLocaleString(lang, {
-            minimumFractionDigits: props.decimal,
-            //maximumFractionDigits: undefined,
-        });
+        return (
+            <>
+                {children.toLocaleString(lang, {
+                    minimumFractionDigits: props.decimal,
+                    //maximumFractionDigits: undefined,
+                })}
+            </>
+        );
     }
 
     if (children instanceof Date) {
         switch (props['as']) {
             case 'date':
-                return children.toLocaleDateString(lang);
+                return <>{children.toLocaleDateString(lang)}</>;
             case 'time':
-                return children.toLocaleTimeString(lang);
+                return <>{children.toLocaleTimeString(lang)}</>;
             default:
-                return children.toLocaleString(lang);
+                return <>{children.toLocaleString(lang)}</>;
         }
     }
 
     return children;
-}
+});
