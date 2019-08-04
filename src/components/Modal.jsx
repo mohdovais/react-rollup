@@ -5,27 +5,24 @@ import ModalBacdrop from './ModalBackdrop';
 import './Modal.css';
 
 const classNames = {
-    center: 'modal-center', 
+    center: 'modal-center',
     bottom: 'modal-end',
-    cover: 'modal-cover'
+    cover: 'modal-cover',
 };
+
+function Modal() {
+    const className = 'modal ' + (classNames[this.props.align] || '');
+    return (
+        <Portal className={className}>
+            <ModalBacdrop className="backdrop-in" />
+            <div className="modal-content">{this.props.children}</div>
+        </Portal>
+    );
+}
 
 Modal.propTypes = {
     align: PropTypes.string,
-    children: PropTypes.children
+    children: PropTypes.children,
 };
 
-export default class Modal extends React.Component {
-
-    render() {
-        const className = 'modal ' + (classNames[this.props.align] || '');
-        return (
-            <Portal className={className}>
-                <ModalBacdrop className="backdrop-in" />
-                <div className="modal-content">
-                    {this.props.children}
-                </div>
-            </Portal>
-        );
-    }
-}
+export default React.memo(Modal);

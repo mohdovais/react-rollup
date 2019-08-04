@@ -1,5 +1,5 @@
 module.exports = {
     verbose: true,
     collectCoverage: false,
-    coverageDirectory: 'test/coverage'
+    coverageDirectory: 'test/coverage',
 };

@@ -3,16 +3,16 @@ import PropTypes from 'prop-types';
 import Modal from './Modal';
 import ActionsGroup from './ActionsGroup';
 
+function Actions(props) {
+    return (
+        <Modal align="bottom">
+            <ActionsGroup actions={props.actions} />
+        </Modal>
+    );
+}
+
 Actions.propTypes = {
-    actions: PropTypes.arrayOf(PropTypes.object)
+    actions: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default class Actions extends React.PureComponent {
-    render() {
-        return (
-            <Modal align="bottom">
-                <ActionsGroup actions={this.props.actions} />
-            </Modal>
-        );
-    }
-}
+export default React.memo(Actions);

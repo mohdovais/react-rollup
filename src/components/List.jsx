@@ -1,24 +1,17 @@
 import React from 'react';
 import './List.css';
 
-export default class List extends React.PureComponent {
+const getList = renderer => (items = []) => {
+    items.map((item, index, items) => {
+        return <li key={index}>{renderer(item, index, items)}</li>;
+    });
+};
 
-    render() {
-        const className = 'list ' + (this.props.className || '');
-        return (
-            <ul className={className}>
-                {this.getList(this.props.items || [])}
-            </ul>
-        );
-    }
-
-    getList(items) {
-        return items.map((item, index, items) => {
-            return (
-                <li key={index}>
-                    {this.props.renderer(item, index, items)}
-                </li>
-            );
-        });
-    }
+function List(props) {
+    const className = 'list ' + (props.className || '');
+    return (
+        <ul className={className}>{getList(props.renderer)(props.items)}</ul>
+    );
 }
+
+export default React.memo(List);
