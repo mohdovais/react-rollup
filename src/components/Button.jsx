@@ -13,26 +13,28 @@ function filterAttribues(props) {
 
 const BUTTON_STYLES = ['link', 'outline', 'fill'];
 
-export default class Button extends React.PureComponent {
-    render() {
-        const props = this.props;
-        const className = BUTTON_STYLES.indexOf(props.buttonStyle) === -1 ? null : 'button-' + props.buttonStyle;
+function Button(props) {
+    const className =
+        BUTTON_STYLES.indexOf(props.buttonStyle) === -1
+            ? null
+            : 'button-' + props.buttonStyle;
 
-        return (
-            <button 
-                type="button" 
-                {...filterAttribues(props)} 
-                className={className}
-                onClick={props.onClick}
-            >
-                {props.children}
-            </button>
-        );
-    }
+    return (
+        <button
+            type="button"
+            {...filterAttribues(props)}
+            className={className}
+            onClick={props.onClick}
+        >
+            {props.children}
+        </button>
+    );
 }
 
-Button.PropTypes = {
+Button.propTypes = {
     buttonStyle: PropTypes.oneOf(BUTTON_STYLES),
     onClick: PropTypes.func,
-    children: PropTypes.array
+    children: PropTypes.array,
 };
+
+export default React.memo(Button);

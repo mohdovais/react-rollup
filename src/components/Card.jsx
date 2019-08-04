@@ -8,9 +8,13 @@ export default class Card extends React.PureComponent {
         const props = this.props;
         return (
             <div className="card">
-                <RenderIf condition={props.header}><header>{props.header}</header></RenderIf>
+                <RenderIf condition={props.header}>
+                    <header>{props.header}</header>
+                </RenderIf>
                 <div className="card-content">{props.children}</div>
-                <RenderIf condition={props.footer}><footer>{props.footer}</footer></RenderIf>
+                <RenderIf condition={props.footer}>
+                    <footer>{props.footer}</footer>
+                </RenderIf>
             </div>
         );
     }

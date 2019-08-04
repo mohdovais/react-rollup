@@ -5,7 +5,6 @@ import Card from './../components/Card';
 import Block, { BlockTitle } from './../components/Block';
 import Button from './../components/Button';
 import LinkedList from './../components/LinkedList';
-import Actions from './../components/Actions';
 
 function Page1(props) {
     const navBar = <NavBar title="Hello world" />;
@@ -19,7 +18,7 @@ function Page1(props) {
                     console.log(a);
                 }}
             />
-
+            <p>ccc</p>
             <Card
                 header="Lorem commented on Mar 6, 2017"
                 footer="Lorem commented on Mar 6, 2017"
@@ -40,12 +39,12 @@ function Page1(props) {
                 React, Component is just an artifact of how Babel works.
             </Card>
 
-            <BlockTitle>Lorem Ipsum is simply dummy text</BlockTitle>
+            <BlockTitle>Aldus PageMaker including versions of Lorem</BlockTitle>
             <Block strong={true}>
                 Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book. It has
+                industry. Lorem Ipsum has been the industrys standard dummy text
+                ever since the 1500s, when an unknown printer took a galley of
+                type and scrambled it to make a type specimen book. It has
                 survived not only five centuries, but also the leap into
                 electronic typesetting, remaining essentially unchanged. It was
                 popularised in the 1960s with the release of Letraset sheets

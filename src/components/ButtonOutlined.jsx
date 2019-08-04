@@ -15,5 +15,5 @@ export default class ButtonOutlined extends React.PureComponent {
 
 ButtonOutlined.propTypes = {
     onClick: PropTypes.func,
-    children: PropTypes.array
+    children: PropTypes.array,
 };
