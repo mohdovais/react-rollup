@@ -3,16 +3,13 @@ module.exports = {
     env: {
         browser: true,
         es6: true,
+        commonjs: true
     },
     extends: [
         'eslint:recommended',
         'plugin:react/recommended',
         'plugin:prettier/recommended',
     ],
-    globals: {
-        Atomics: 'readonly',
-        SharedArrayBuffer: 'readonly',
-    },
     parserOptions: {
         ecmaFeatures: {
             jsx: true,
@@ -20,7 +17,7 @@ module.exports = {
         ecmaVersion: 2018,
         sourceType: 'module',
     },
-    plugins: ['react'],
+    plugins: ['react', 'react-hooks'],
     rules: {},
     settings: {
         react: {
