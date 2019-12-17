@@ -6,12 +6,14 @@ import replace from 'rollup-plugin-replace';
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
+import svg from 'rollup-plugin-svg-hyperscript';
 
 const production = !process.env.ROLLUP_WATCH;
 const NODE_ENV = production ? 'production' : 'development';
 
 export default {
-    input: 'src/main.jsx',
+    perf: true,
+    input: 'src/main.js',
     output: {
         file: `dist/bundle.js`,
         format: 'umd',
@@ -32,6 +34,7 @@ export default {
             },
             extract: true,
         }),
+        svg(),
         resolve({
             browser: true,
             extensions: ['.mjs', '.js', '.jsx', '.json'],
