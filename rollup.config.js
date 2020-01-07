@@ -12,7 +12,7 @@ const production = !process.env.ROLLUP_WATCH;
 const NODE_ENV = production ? 'production' : 'development';
 
 export default {
-    perf: true,
+    // perf: true,
     input: 'src/main.js',
     output: {
         file: `dist/bundle.js`,
@@ -25,7 +25,7 @@ export default {
             'prop-types': 'PropTypes',
         },
     },
-    external: ['react', 'react-dom', 'prop-types'],
+    //external: ['react', 'react-dom', 'prop-types'],
     plugins: [
         postcss({
             plugins: [autoprefixer],
