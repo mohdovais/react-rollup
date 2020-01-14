@@ -1,23 +1,26 @@
 /*global process*/
 import postcss from 'rollup-plugin-postcss';
 import autoprefixer from 'autoprefixer';
-import resolve from 'rollup-plugin-node-resolve';
-import replace from 'rollup-plugin-replace';
+import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import babel from 'rollup-plugin-babel';
-import commonjs from 'rollup-plugin-commonjs';
+import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import svg from 'rollup-plugin-svg-hyperscript';
+import customUMD from './rollup-plugin-custom-umd';
 
 const production = !process.env.ROLLUP_WATCH;
 const NODE_ENV = production ? 'production' : 'development';
 
 export default {
-    // perf: true,
     input: 'src/main.js',
     output: {
-        file: `dist/bundle.js`,
+        file: 'dist/bundle.js',
         format: 'umd',
-        name: 'app-name',
+        name: 'org.app',
+        amd: {
+            id: 'app',
+        },
         sourcemap: !production,
         globals: {
             react: 'React',
@@ -25,8 +28,9 @@ export default {
             'prop-types': 'PropTypes',
         },
     },
-    //external: ['react', 'react-dom', 'prop-types'],
+    external: ['react', 'react-dom', 'prop-types'],
     plugins: [
+        customUMD(),
         postcss({
             plugins: [autoprefixer],
             minimize: production && {
