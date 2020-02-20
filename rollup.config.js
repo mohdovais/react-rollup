@@ -7,7 +7,6 @@ import babel from 'rollup-plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import svg from 'rollup-plugin-svg-hyperscript';
-import customUMD from './rollup-plugin-custom-umd';
 
 const production = !process.env.ROLLUP_WATCH;
 const NODE_ENV = production ? 'production' : 'development';
@@ -30,7 +29,6 @@ export default {
     },
     external: ['react', 'react-dom', 'prop-types'],
     plugins: [
-        customUMD(),
         postcss({
             plugins: [autoprefixer],
             minimize: production && {
